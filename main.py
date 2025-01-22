@@ -33,9 +33,11 @@ def upload_file():
         return redirect(url_for('uploaded_file', filename=filename))
     return redirect(request.url)
 
+from flask import send_from_directory
+
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
-    return f'File {filename} uploaded successfully!'
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 if __name__ == '__main__':
     app.run(debug=True)
