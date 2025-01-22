@@ -1,10 +1,14 @@
 from flask import Flask, request, redirect, url_for, render_template
 import os
+import pathlib
 
 app = Flask(__name__)
 UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+# Ensure the upload folder exists
+pathlib.Path(UPLOAD_FOLDER).mkdir(parents=True, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 def allowed_file(filename):
