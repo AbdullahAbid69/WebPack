@@ -47,7 +47,7 @@ document.getElementById('uploadForm').addEventListener('submit', async function(
     resultDiv.innerHTML = '';
 
     try {
-        const response = await fetch('/convert', {
+        const response = await fetch('http://localhost:5000/convert', {
             method: 'POST',
             body: formData
         });
