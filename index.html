@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Converter</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>All-in-One File Converter</h1>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <input type="file" id="fileInput" name="file" required>
+        <select id="formatSelect" name="format" required>
+            <option value="pdf">PDF</option>
+            <option value="docx">DOCX</option>
+            <option value="pptx">PPTX</option>
+            <option value="jpeg">JPEG</option>
+            <option value="png">PNG</option>
+            <option value="svg">SVG</option>
+        </select>
+        <button type="submit">Convert</button>
+    </form>
+    <div id="result"></div>
+    <div id="loading" style="display: none;">Converting...</div>
+    <script src="script.js"></script>
+</body>
+</html>
+<script>
+document.getElementById('uploadForm').addEventListener('submit', async function(event) {
+    event.preventDefault();
+
+    const fileInput = document.getElementById('fileInput');
+    const formatSelect = document.getElementById('formatSelect');
+    const resultDiv = document.getElementById('result');
+    const loadingDiv = document.getElementById('loading');
+
+    if (fileInput.files.length === 0) {
+        resultDiv.innerHTML = '<p>Please select a file to convert.</p>';
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', fileInput.files[0]);
+    formData.append('format', formatSelect.value);
+
+    loadingDiv.style.display = 'block';
+    resultDiv.innerHTML = '';
+
+    try {
+        const response = await fetch('/convert', {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            throw new Error('Conversion failed');
+        }
+
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `converted.${formatSelect.value}`;
+        link.click();
+        URL.revokeObjectURL(url);
+
+        resultDiv.innerHTML = '<p>File converted successfully. Check your downloads.</p>';
+    } catch (error) {
+        resultDiv.innerHTML = `<p>Error: ${error.message}</p>`;
+    } finally {
+        loadingDiv.style.display = 'none';
+    }
+});
+</script>
